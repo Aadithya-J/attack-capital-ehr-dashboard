@@ -1,0 +1,62 @@
+import { NextRequest, NextResponse } from "next/server";
+import modmedClient from "@/lib/modmedClient";
+import { getModMedToken } from "@/lib/modmedAuth";
+
+/**
+ * GET handler to search for appointments by date, provider, or patient.
+ *
+ * Query Parameters based on ModMed Docs:
+ * - `patient`: The patient ID (e.g., '12345')
+ * - `practitioner`: The practitioner ID (e.g., '67890')
+ * - `date`: A date range for the search (e.g., 'ge2023-10-26')
+ * - `status`: e.g., 'booked,arrived,pending'
+ */
+export async function GET(request: NextRequest) {
+  try {
+    const searchParams = request.nextUrl.searchParams.toString();
+    const token = await getModMedToken();
+
+    const res = await modmedClient.get(`/ema/fhir/v2/Appointment?${searchParams}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "x-api-key": process.env.MODMED_API_KEY,
+      },
+    });
+
+    return NextResponse.json(res.data);
+  } catch (error: any)    {
+    return NextResponse.json(
+      { error: error.response?.data || error.message },
+      { status: error.response?.status || 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const token = await getModMedToken();
+
+    if (!body.status || !body.appointmentType || !body.participant || !body.start || !body.end) {
+        return NextResponse.json(
+            { error: "Missing required fields for creating an appointment." },
+            { status: 400 }
+        );
+    }
+
+    const res = await modmedClient.post("/ema/fhir/v2/Appointment", body, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "x-api-key": process.env.MODMED_API_KEY,
+        "Content-Type": "application/json",
+      },
+    });
+
+    return NextResponse.json(res.data, { status: 201 });
+  } catch (error: any) {
+    return NextResponse.json(
+      { error: error.response?.data || error.message },
+      { status: error.response?.status || 500 }
+    );
+  }
+}
