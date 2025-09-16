@@ -125,20 +125,20 @@ export default function ConditionsSection() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return 'text-red-600';
-      case 'inactive': return 'text-gray-600';
-      case 'resolved': return 'text-green-600';
-      case 'remission': return 'text-blue-600';
-      default: return 'text-gray-600';
+      case 'active': return 'text-red-700 bg-red-50 px-2 py-1 rounded text-xs';
+      case 'inactive': return 'text-gray-700 bg-gray-100 px-2 py-1 rounded text-xs';
+      case 'resolved': return 'text-green-700 bg-green-50 px-2 py-1 rounded text-xs';
+      case 'remission': return 'text-blue-700 bg-blue-50 px-2 py-1 rounded text-xs';
+      default: return 'text-gray-700 bg-gray-100 px-2 py-1 rounded text-xs';
     }
   };
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {
-      case 'severe': return 'text-red-600';
-      case 'moderate': return 'text-orange-600';
-      case 'mild': return 'text-yellow-600';
-      default: return 'text-gray-600';
+      case 'severe': return 'text-red-800 bg-red-100 px-2 py-1 rounded text-xs font-medium';
+      case 'moderate': return 'text-orange-800 bg-orange-100 px-2 py-1 rounded text-xs font-medium';
+      case 'mild': return 'text-yellow-800 bg-yellow-100 px-2 py-1 rounded text-xs font-medium';
+      default: return 'text-gray-800 bg-gray-100 px-2 py-1 rounded text-xs font-medium';
     }
   };
 
@@ -290,35 +290,35 @@ export default function ConditionsSection() {
                         {condition.code?.text || condition.code?.coding?.[0]?.display || 'Unknown Condition'}
                       </h4>
                       {condition.severity?.coding?.[0]?.code && (
-                        <span className={`text-sm font-medium ${getSeverityColor(condition.severity.coding[0].code)}`}>
-                          {condition.severity.coding[0].display?.toUpperCase()}
+                        <span className={getSeverityColor(condition.severity.coding[0].code)}>
+                          {condition.severity.coding[0].display}
                         </span>
                       )}
                     </div>
-                    <div className="flex items-center gap-4 mb-2">
-                      <span className={`text-sm font-medium ${getStatusColor(condition.clinicalStatus?.coding?.[0]?.code || '')}`}>
-                        {condition.clinicalStatus?.coding?.[0]?.display?.toUpperCase() || 'UNKNOWN'}
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className={getStatusColor(condition.clinicalStatus?.coding?.[0]?.code || '')}>
+                        {condition.clinicalStatus?.coding?.[0]?.display || 'Unknown'}
                       </span>
-                      <span className="text-sm text-gray-600">
+                      <span className="text-xs text-gray-600 bg-gray-50 px-2 py-1 rounded">
                         {condition.verificationStatus?.coding?.[0]?.display}
                       </span>
                     </div>
-                    <p className="text-sm text-gray-600 mb-1">
-                      <strong>Patient:</strong> {condition.subject.display || condition.subject.reference}
+                    <p className="text-sm text-gray-800 mb-1">
+                      <strong className="text-gray-900">Patient:</strong> {condition.subject.display || condition.subject.reference}
                     </p>
                     {condition.code?.coding?.[0]?.code && (
-                      <p className="text-sm text-gray-600 mb-1">
-                        <strong>Code:</strong> {condition.code.coding[0].code}
+                      <p className="text-sm text-gray-800 mb-1">
+                        <strong className="text-gray-900">Code:</strong> {condition.code.coding[0].code}
                       </p>
                     )}
                     {condition.onsetDateTime && (
-                      <p className="text-sm text-gray-600 mb-1">
-                        <strong>Onset:</strong> {formatDate(condition.onsetDateTime)}
+                      <p className="text-sm text-gray-800 mb-1">
+                        <strong className="text-gray-900">Onset:</strong> {formatDate(condition.onsetDateTime)}
                       </p>
                     )}
                     {condition.recordedDate && (
-                      <p className="text-sm text-gray-600">
-                        <strong>Recorded:</strong> {formatDate(condition.recordedDate)}
+                      <p className="text-sm text-gray-800">
+                        <strong className="text-gray-900">Recorded:</strong> {formatDate(condition.recordedDate)}
                       </p>
                     )}
                   </div>
@@ -370,15 +370,15 @@ export default function ConditionsSection() {
               <div className="space-y-4">
                 <div>
                   <h4 className="font-medium mb-2">Basic Information</h4>
-                  <p><strong>ID:</strong> {selectedCondition.id}</p>
-                  <p><strong>Condition:</strong> {selectedCondition.code?.text || selectedCondition.code?.coding?.[0]?.display}</p>
-                  <p><strong>Clinical Status:</strong> 
+                  <p className="text-gray-900"><strong>ID:</strong> {selectedCondition.id}</p>
+                  <p className="text-gray-900"><strong>Condition:</strong> {selectedCondition.code?.text || selectedCondition.code?.coding?.[0]?.display}</p>
+                  <p className="text-gray-900"><strong>Clinical Status:</strong> 
                     <span className={`ml-2 ${getStatusColor(selectedCondition.clinicalStatus?.coding?.[0]?.code || '')}`}>
-                      {selectedCondition.clinicalStatus?.coding?.[0]?.display?.toUpperCase()}
+                      {selectedCondition.clinicalStatus?.coding?.[0]?.display}
                     </span>
                   </p>
-                  <p><strong>Verification Status:</strong> {selectedCondition.verificationStatus?.coding?.[0]?.display}</p>
-                  <p><strong>Patient:</strong> {selectedCondition.subject.display || selectedCondition.subject.reference}</p>
+                  <p className="text-gray-900"><strong>Verification Status:</strong> {selectedCondition.verificationStatus?.coding?.[0]?.display}</p>
+                  <p className="text-gray-900"><strong>Patient:</strong> {selectedCondition.subject.display || selectedCondition.subject.reference}</p>
                 </div>
 
                 {selectedCondition.code?.coding && (
@@ -386,9 +386,9 @@ export default function ConditionsSection() {
                     <h4 className="font-medium mb-2">Coding Information</h4>
                     {selectedCondition.code.coding.map((coding, index) => (
                       <div key={index} className="mb-2 p-2 bg-gray-50 rounded">
-                        <p><strong>Code:</strong> {coding.code}</p>
-                        <p><strong>Display:</strong> {coding.display}</p>
-                        {coding.system && <p><strong>System:</strong> {coding.system}</p>}
+                        <p className="text-gray-900"><strong>Code:</strong> {coding.code}</p>
+                        <p className="text-gray-900"><strong>Display:</strong> {coding.display}</p>
+                        {coding.system && <p className="text-gray-900"><strong>System:</strong> {coding.system}</p>}
                       </div>
                     ))}
                   </div>
@@ -397,22 +397,22 @@ export default function ConditionsSection() {
                 {selectedCondition.severity && (
                   <div>
                     <h4 className="font-medium mb-2">Severity</h4>
-                    <p className={getSeverityColor(selectedCondition.severity.coding?.[0]?.code || '')}>
+                    <span className={getSeverityColor(selectedCondition.severity.coding?.[0]?.code || '')}>
                       {selectedCondition.severity.coding?.[0]?.display}
-                    </p>
+                    </span>
                   </div>
                 )}
 
                 <div>
                   <h4 className="font-medium mb-2">Timeline</h4>
                   {selectedCondition.onsetDateTime && (
-                    <p><strong>Onset Date:</strong> {formatDate(selectedCondition.onsetDateTime)}</p>
+                    <p className="text-gray-900"><strong>Onset Date:</strong> {formatDate(selectedCondition.onsetDateTime)}</p>
                   )}
                   {selectedCondition.recordedDate && (
-                    <p><strong>Recorded Date:</strong> {formatDate(selectedCondition.recordedDate)}</p>
+                    <p className="text-gray-900"><strong>Recorded Date:</strong> {formatDate(selectedCondition.recordedDate)}</p>
                   )}
                   {selectedCondition.recorder && (
-                    <p><strong>Recorded By:</strong> {selectedCondition.recorder.display || selectedCondition.recorder.reference}</p>
+                    <p className="text-gray-900"><strong>Recorded By:</strong> {selectedCondition.recorder.display || selectedCondition.recorder.reference}</p>
                   )}
                 </div>
 
@@ -421,7 +421,7 @@ export default function ConditionsSection() {
                     <h4 className="font-medium mb-2">Notes</h4>
                     {selectedCondition.note.map((note, index) => (
                       <div key={index} className="p-2 bg-gray-50 rounded mb-2">
-                        <p>{note.text}</p>
+                        <p className="text-gray-900">{note.text}</p>
                       </div>
                     ))}
                   </div>

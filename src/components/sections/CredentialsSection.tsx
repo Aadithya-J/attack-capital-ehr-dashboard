@@ -28,6 +28,7 @@ export default function CredentialsSection({ onCredentialsChange }: CredentialsS
 
   const [isConnected, setIsConnected] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [connectionError, setConnectionError] = useState<string>('');
 
   const handleInputChange = (field: keyof Credentials, value: string) => {
     const updated = { ...credentials, [field]: value };
@@ -48,14 +49,14 @@ export default function CredentialsSection({ onCredentialsChange }: CredentialsS
       
       if (response.ok) {
         setIsConnected(true);
-        alert('Connection successful!');
+        setConnectionError('');
       } else {
         setIsConnected(false);
-        alert('Connection failed. Please check your credentials.');
+        setConnectionError('Connection failed. Please check your credentials.');
       }
     } catch (error) {
       setIsConnected(false);
-      alert('Connection failed. Please check your credentials.');
+      setConnectionError('Connection failed. Please check your credentials.');
     } finally {
       setIsLoading(false);
     }
@@ -116,9 +117,14 @@ export default function CredentialsSection({ onCredentialsChange }: CredentialsS
             </Button>
             
             {isConnected && (
-              <div className="flex items-center text-green-600">
-                <span className="mr-2">✅</span>
+              <div className="flex items-center text-green-700 bg-green-50 px-3 py-2 rounded-md">
+                <span className="mr-2 text-green-600">•</span>
                 Connected
+              </div>
+            )}
+            {connectionError && (
+              <div className="bg-red-50 border border-red-200 rounded-md p-4">
+                <p className="text-red-900">Connection failed: {connectionError}</p>
               </div>
             )}
           </div>

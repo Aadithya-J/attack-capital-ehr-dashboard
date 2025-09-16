@@ -102,18 +102,18 @@ export default function AppointmentsSection() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'booked': return 'text-green-600';
-      case 'cancelled': return 'text-red-600';
-      case 'fulfilled': return 'text-blue-600';
-      case 'noshow': return 'text-orange-600';
-      default: return 'text-gray-600';
+      case 'booked': return 'text-green-800 bg-green-50 px-2 py-1 rounded text-xs';
+      case 'cancelled': return 'text-red-800 bg-red-50 px-2 py-1 rounded text-xs';
+      case 'fulfilled': return 'text-blue-800 bg-blue-50 px-2 py-1 rounded text-xs';
+      case 'noshow': return 'text-orange-800 bg-orange-50 px-2 py-1 rounded text-xs';
+      default: return 'text-gray-800 bg-gray-100 px-2 py-1 rounded text-xs';
     }
   };
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Appointments</h2>
+        <h2 className="text-2xl text-gray-900 font-bold">Appointments</h2>
         <Button onClick={() => setIsCreating(true)}>
           Schedule Appointment
         </Button>
@@ -226,25 +226,25 @@ export default function AppointmentsSection() {
                 <div className="flex justify-between items-start">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-2">
-                      <span className={`font-medium ${getStatusColor(appointment.status)}`}>
-                        {appointment.status.toUpperCase()}
+                      <span className={getStatusColor(appointment.status)}>
+                        {appointment.status}
                       </span>
                       {appointment.appointmentType?.coding?.[0]?.display && (
-                        <span className="text-sm bg-gray-100 px-2 py-1 rounded">
+                        <span className="text-xs bg-gray-100 px-2 py-1 rounded text-gray-700">
                           {appointment.appointmentType.coding[0].display}
                         </span>
                       )}
                     </div>
-                    <p className="text-sm text-gray-600 mb-1">
-                      <strong>Start:</strong> {formatDateTime(appointment.start)}
+                    <p className="text-sm text-gray-800 mb-1">
+                      <strong className="text-gray-900">Start:</strong> {formatDateTime(appointment.start)}
                     </p>
-                    <p className="text-sm text-gray-600 mb-2">
-                      <strong>End:</strong> {formatDateTime(appointment.end)}
+                    <p className="text-sm text-gray-800 mb-2">
+                      <strong className="text-gray-900">End:</strong> {formatDateTime(appointment.end)}
                     </p>
                     <div className="text-sm">
                       {appointment.participant?.map((participant, index) => (
-                        <p key={index} className="text-gray-600">
-                          {participant.actor.display}: {participant.actor.reference}
+                        <p key={index} className="text-gray-800">
+                          <strong className="text-gray-900">{participant.actor.display}:</strong> {participant.actor.reference}
                         </p>
                       ))}
                     </div>
@@ -297,21 +297,21 @@ export default function AppointmentsSection() {
               <div className="space-y-4">
                 <div>
                   <h4 className="font-medium mb-2">Basic Information</h4>
-                  <p><strong>ID:</strong> {selectedAppointment.id}</p>
-                  <p><strong>Status:</strong> 
+                  <p className="text-gray-900"><strong>ID:</strong> {selectedAppointment.id}</p>
+                  <p className="text-gray-900"><strong>Status:</strong> 
                     <span className={`ml-2 ${getStatusColor(selectedAppointment.status)}`}>
-                      {selectedAppointment.status.toUpperCase()}
+                      {selectedAppointment.status}
                     </span>
                   </p>
-                  <p><strong>Start:</strong> {formatDateTime(selectedAppointment.start)}</p>
-                  <p><strong>End:</strong> {formatDateTime(selectedAppointment.end)}</p>
+                  <p className="text-gray-900"><strong>Start:</strong> {formatDateTime(selectedAppointment.start)}</p>
+                  <p className="text-gray-900"><strong>End:</strong> {formatDateTime(selectedAppointment.end)}</p>
                 </div>
 
                 {selectedAppointment.appointmentType && (
                   <div>
                     <h4 className="font-medium mb-2">Appointment Type</h4>
                     {selectedAppointment.appointmentType.coding?.map((coding, index) => (
-                      <p key={index}>
+                      <p key={index} className="text-gray-900">
                         <strong>Code:</strong> {coding.code} - {coding.display}
                       </p>
                     ))}
@@ -322,9 +322,9 @@ export default function AppointmentsSection() {
                   <h4 className="font-medium mb-2">Participants</h4>
                   {selectedAppointment.participant?.map((participant, index) => (
                     <div key={index} className="mb-2 p-2 bg-gray-50 rounded">
-                      <p><strong>Type:</strong> {participant.actor.display}</p>
-                      <p><strong>Reference:</strong> {participant.actor.reference}</p>
-                      <p><strong>Status:</strong> {participant.status}</p>
+                      <p className="text-gray-900"><strong>Type:</strong> {participant.actor.display}</p>
+                      <p className="text-gray-900"><strong>Reference:</strong> {participant.actor.reference}</p>
+                      <p className="text-gray-900"><strong>Status:</strong> {participant.status}</p>
                     </div>
                   ))}
                 </div>

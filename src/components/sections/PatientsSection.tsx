@@ -106,13 +106,23 @@ export default function PatientsSection() {
                 <div className="flex justify-between items-start">
                   <div>
                     <h3 className="font-semibold text-lg">{getPatientName(patient)}</h3>
-                    <p className="text-gray-600">ID: {patient.id}</p>
-                    <p className="text-gray-600">Gender: {patient.gender}</p>
-                    <p className="text-gray-600">DOB: {patient.birthDate}</p>
-                  </div>
-                  <div className="text-right text-sm text-gray-500">
-                    <p>Phone: {getPatientPhone(patient)}</p>
-                    <p>Address: {getPatientAddress(patient)}</p>
+                    <p className="text-sm text-gray-800 mb-1">
+                      <strong className="text-gray-900">ID:</strong> {patient.id}
+                    </p>
+                    <p className="text-sm text-gray-800 mb-1">
+                      <strong className="text-gray-900">Gender:</strong> {patient.gender}
+                    </p>
+                    <p className="text-sm text-gray-800 mb-1">
+                      <strong className="text-gray-900">Birth Date:</strong> {patient.birthDate}
+                    </p>
+                    {patient.telecom && (
+                      <p className="text-sm text-gray-800">
+                        <strong className="text-gray-900">Contact:</strong> {patient.telecom[0]?.value}
+                      </p>
+                    )}
+                    <p className="text-sm text-gray-800">
+                      <strong className="text-gray-900">Address:</strong> {getPatientAddress(patient)}
+                    </p>
                   </div>
                 </div>
               </div>
