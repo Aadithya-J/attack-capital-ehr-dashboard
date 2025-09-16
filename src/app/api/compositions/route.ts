@@ -1,4 +1,5 @@
 import { addSecurityHeaders, logRequest, logResponse } from "@/lib/securityHeaders";
+import { getModMedConfig } from "@/lib/getModMedConfig";
 import { NextRequest, NextResponse } from "next/server";
 import modmedClient from "@/lib/modmedClient";
 import { getModMedToken } from "@/lib/modmedAuth";
@@ -17,11 +18,12 @@ export async function GET(request: NextRequest) {
       return addSecurityHeaders(response);
     }
 
+    const cfg = getModMedConfig();
     const token = await getModMedToken();
     const res = await modmedClient.get(`/ema/fhir/v2/Composition?subject=Patient/${patientId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
-        "x-api-key": process.env.MODMED_API_KEY,
+        "x-api-key": cfg.apiKey,
       },
     });
 
@@ -39,6 +41,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
+    const cfg = getModMedConfig();
     const token = await getModMedToken();
 
     if (!body.subject || !body.author || !body.title) {
@@ -52,7 +55,7 @@ export async function POST(request: NextRequest) {
     const res = await modmedClient.post("/ema/fhir/v2/Composition", body, {
       headers: {
         Authorization: `Bearer ${token}`,
-        "x-api-key": process.env.MODMED_API_KEY,
+        "x-api-key": cfg.apiKey,
         "Content-Type": "application/json",
       },
     });

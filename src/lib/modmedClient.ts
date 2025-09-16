@@ -1,13 +1,13 @@
 import axios from "axios";
+import { getModMedConfig } from "./getModMedConfig";
 
-
-const baseURL = `${process.env.MODMED_BASE_URL}/${process.env.MODMED_FIRM_URL_PREFIX}`
-// console.log(baseURL)
+const cfg = getModMedConfig();
 
 const modmedClient = axios.create({
-  baseURL: baseURL,
+  baseURL: `${cfg.baseUrl}/${cfg.firmUrlPrefix}`,
   headers: {
     "Content-Type": "application/json",
+    "x-api-key": cfg.apiKey,
   },
 });
 
