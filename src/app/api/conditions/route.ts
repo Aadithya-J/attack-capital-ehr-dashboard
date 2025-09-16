@@ -13,6 +13,7 @@ export async function GET(request: NextRequest) {
         { error: "Patient ID is required." } as APIErrorResponse,
         { status: 400 }
       );
+      return addSecurityHeaders(response);
     }
 
     const token = await getModMedToken();
@@ -30,6 +31,7 @@ export async function GET(request: NextRequest) {
       { error: error.response?.data || error.message } as APIErrorResponse,
       { status: error.response?.status || 500 }
     );
+    return addSecurityHeaders(response);
   }
 }
 
@@ -53,6 +55,7 @@ export async function POST(request: NextRequest) {
         { success: true, message: "Condition created successfully." } as SuccessResponse,
         { status: 201 }
       );
+      return addSecurityHeaders(response);
     }
     
     const response = NextResponse.json(res.data, { status: 201 });
@@ -62,6 +65,7 @@ export async function POST(request: NextRequest) {
       { error: error.response?.data || error.message } as APIErrorResponse,
       { status: error.response?.status || 500 }
     );
+    return addSecurityHeaders(response);
   }
 }
 
@@ -75,6 +79,7 @@ export async function PUT(request: NextRequest) {
                 { error: "Condition ID is required in the request body for updates." } as APIErrorResponse,
                 { status: 400 }
             );
+            return addSecurityHeaders(response);
         }
 
         const token = await getModMedToken();
@@ -91,14 +96,16 @@ export async function PUT(request: NextRequest) {
             const response = NextResponse.json(
                 { success: true, message: `Condition ${conditionId} updated successfully.` } as SuccessResponse
             );
+            return addSecurityHeaders(response);
         }
         
         const response = NextResponse.json(res.data);
-    return addSecurityHeaders(response);
+        return addSecurityHeaders(response);
     } catch (error: any) {
         const response = NextResponse.json(
             { error: error.response?.data || error.message } as APIErrorResponse,
             { status: error.response?.status || 500 }
         );
+        return addSecurityHeaders(response);
     }
 }
