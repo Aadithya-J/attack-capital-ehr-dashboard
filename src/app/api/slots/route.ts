@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import modmedClient from "@/lib/modmedClient";
 import { getModMedToken } from "@/lib/modmedAuth";
+import { SlotSearchResponse, APIErrorResponse } from "@/types";
 
 /**
  * Query Parameters based on ModMed Docs:
@@ -20,7 +21,7 @@ export async function GET(request: NextRequest) {
 
     if (!request.nextUrl.searchParams.has("appointment-type")) {
         return NextResponse.json(
-            { error: "An 'appointment-type' query parameter is required." },
+            { error: "An 'appointment-type' query parameter is required." } as APIErrorResponse,
             { status: 400 }
         );
     }
@@ -34,10 +35,10 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    return NextResponse.json(res.data);
+    return NextResponse.json(res.data as SlotSearchResponse);
   } catch (error: any) {
     return NextResponse.json(
-      { error: error.response?.data || error.message },
+      { error: error.response?.data || error.message } as APIErrorResponse,
       { status: error.response?.status || 500 }
     );
   }

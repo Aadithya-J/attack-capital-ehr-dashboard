@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import modmedClient from "@/lib/modmedClient";
 import { getModMedToken } from "@/lib/modmedAuth";
+import { PatientGetResponse, PatientUpdateRequest, PatientUpdateResponse, APIErrorResponse } from "@/types";
 
 export async function GET(
   request: NextRequest,
@@ -17,10 +18,10 @@ export async function GET(
       },
     });
 
-    return NextResponse.json(res.data);
+    return NextResponse.json(res.data as PatientGetResponse);
   } catch (error: any) {
     return NextResponse.json(
-      { error: error.response?.data || error.message },
+      { error: error.response?.data || error.message } as APIErrorResponse,
       { status: error.response?.status || 500 }
     );
   }
@@ -32,12 +33,12 @@ export async function PUT(
 ) {
   try {
     const { id } = await params;
-    const body = await request.json();
+    const body: PatientUpdateRequest = await request.json();
     const token = await getModMedToken();
 
     if (body.id !== id) {
         return NextResponse.json(
-            { error: "Patient ID in the request body must match the URL." },
+            { error: "Patient ID in the request body must match the URL." } as APIErrorResponse,
             { status: 400 }
         );
     }
@@ -51,16 +52,16 @@ export async function PUT(
     });    
     if (res.status >= 200 && res.status < 300) {
       // Return a success message instead of the empty body.
-      return NextResponse.json({ success: true, message: `Patient ${id} updated successfully.` });
+      return NextResponse.json({ success: true, message: `Patient ${id} updated successfully.` } as PatientUpdateResponse);
     }
 
     return NextResponse.json(
-        { error: "Update was not successful.", details: res.data },
+        { error: "Update was not successful.", details: res.data } as APIErrorResponse,
       { status: res.status }
     );
   } catch (error: any) {
     return NextResponse.json(
-      { error: error.response?.data || error.message },
+      { error: error.response?.data || error.message } as APIErrorResponse,
       { status: error.response?.status || 500 }
     );
   }
