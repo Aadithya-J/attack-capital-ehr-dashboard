@@ -1,3 +1,4 @@
+"use client";
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface Patient {
@@ -31,7 +32,7 @@ export const usePatients = (searchParams?: Record<string, string>) => {
   return useQuery({
     queryKey: ['patients', searchParams],
     queryFn: async (): Promise<Patient[]> => {
-      const params = new URLSearchParams(searchParams);
+      const params = new URLSearchParams(searchParams || {});
       const response = await fetch(`/api/patients?${params}`);
       
       if (!response.ok) {
@@ -41,7 +42,6 @@ export const usePatients = (searchParams?: Record<string, string>) => {
       const data: PatientSearchResponse = await response.json();
       return data.entry?.map(entry => entry.resource) || [];
     },
-    enabled: !!searchParams,
   });
 };
 
