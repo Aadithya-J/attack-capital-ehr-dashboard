@@ -26,6 +26,7 @@ export async function GET(
       { error: error.response?.data || error.message } as APIErrorResponse,
       { status: error.response?.status || 500 }
     );
+    return addSecurityHeaders(response);
   }
 }
 
@@ -44,14 +45,14 @@ export async function PUT(
     const body: AppointmentUpdateRequest = await request.json();
     const token = await getModMedToken();
 
-    if (body.id !== id) {
-      const response = NextResponse.json(
-        { error: "Appointment ID in the request body must match the URL." } as APIErrorResponse,
-        { status: 400 }
-      );
-    }
+    // Add the ID to the body to match ModMed API requirements
+    const updateData = {
+      ...body,
+      id: id,
+      resourceType: "Appointment"
+    };
 
-    const res = await modmedClient.put(`/ema/fhir/v2/Appointment/${id}`, body, {
+    const res = await modmedClient.put(`/ema/fhir/v2/Appointment/${id}`, updateData, {
       headers: {
         Authorization: `Bearer ${token}`,
         "x-api-key": process.env.MODMED_API_KEY,
@@ -64,6 +65,7 @@ export async function PUT(
       const response = NextResponse.json(
         { success: true, message: `Appointment ${id} updated successfully.` } as SuccessResponse
       );
+      return addSecurityHeaders(response);
     }
     
     const response = NextResponse.json(res.data);
@@ -73,5 +75,6 @@ export async function PUT(
       { error: error.response?.data || error.message } as APIErrorResponse,
       { status: error.response?.status || 500 }
     );
+    return addSecurityHeaders(response);
   }
 }
