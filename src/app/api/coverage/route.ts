@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import modmedClient from "@/lib/modmedClient";
 import { getModMedToken } from "@/lib/modmedAuth";
+import { CoverageSearchResponse, APIErrorResponse } from "@/types";
 
 export async function GET(request: NextRequest) {
   try {
@@ -8,7 +9,7 @@ export async function GET(request: NextRequest) {
 
     if (!patientId) {
       return NextResponse.json(
-        { error: "A 'patient' ID is required to search for coverage." },
+        { error: "A 'patient' ID is required to search for coverage." } as APIErrorResponse,
         { status: 400 }
       );
     }
@@ -21,10 +22,10 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    return NextResponse.json(res.data);
+    return NextResponse.json(res.data as CoverageSearchResponse);
   } catch (error: any) {
     return NextResponse.json(
-      { error: error.response?.data || error.message },
+      { error: error.response?.data || error.message } as APIErrorResponse,
       { status: error.response?.status || 500 }
     );
   }

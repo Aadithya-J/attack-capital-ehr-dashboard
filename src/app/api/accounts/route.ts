@@ -1,16 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import modmedClient from "@/lib/modmedClient";
 import { getModMedToken } from "@/lib/modmedAuth";
+import { AccountSearchResponse, APIErrorResponse } from "@/types";
 
 export async function GET(request: NextRequest) {
   try {
     const patientId = request.nextUrl.searchParams.get("patient");
 
     if (!patientId) {
-      return NextResponse.json(
-        { error: "A 'patient' ID is required to search for accounts." },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Patient ID is required." } as APIErrorResponse, { status: 400 });
     }
 
     const token = await getModMedToken();
@@ -21,11 +19,8 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    return NextResponse.json(res.data);
+    return NextResponse.json(res.data as AccountSearchResponse);
   } catch (error: any) {
-    return NextResponse.json(
-      { error: error.response?.data || error.message },
-      { status: error.response?.status || 500 }
-    );
+    return NextResponse.json({ error: error.response?.data || error.message } as APIErrorResponse, { status: error.response?.status || 500 });
   }
 }
