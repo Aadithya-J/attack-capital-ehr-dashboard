@@ -1,6 +1,6 @@
 import { addSecurityHeaders, logRequest, logResponse } from "@/lib/securityHeaders";
 import { NextRequest, NextResponse } from "next/server";
-import modmedClient from "@/lib/modmedClient";
+import { createModMedClient } from "@/lib/modmedClient";
 import { getModMedToken } from "@/lib/modmedAuth";
 import { Appointment, AppointmentUpdateRequest, SuccessResponse, APIErrorResponse } from "@/types";
 
@@ -10,12 +10,12 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
+    const client = await createModMedClient();
     const token = await getModMedToken();
 
-    const res = await modmedClient.get(`/ema/fhir/v2/Appointment/${id}`, {
+    const res = await client.get(`/ema/fhir/v2/Appointment/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
-        "x-api-key": process.env.MODMED_API_KEY,
       },
     });
 
@@ -43,6 +43,7 @@ export async function PUT(
   try {
     const { id } = await params;
     const body: AppointmentUpdateRequest = await request.json();
+    const client = await createModMedClient();
     const token = await getModMedToken();
 
     // Add the ID to the body to match ModMed API requirements
@@ -52,10 +53,9 @@ export async function PUT(
       resourceType: "Appointment"
     };
 
-    const res = await modmedClient.put(`/ema/fhir/v2/Appointment/${id}`, updateData, {
+    const res = await client.put(`/ema/fhir/v2/Appointment/${id}`, updateData, {
       headers: {
         Authorization: `Bearer ${token}`,
-        "x-api-key": process.env.MODMED_API_KEY,
         "Content-Type": "application/json",
       },
     });

@@ -1,6 +1,6 @@
 import { addSecurityHeaders, logRequest, logResponse } from "@/lib/securityHeaders";
 import { NextRequest, NextResponse } from "next/server";
-import modmedClient from "@/lib/modmedClient";
+import { createModMedClient } from "@/lib/modmedClient";
 import { getModMedToken } from "@/lib/modmedAuth";
 import { SlotSearchResponse, APIErrorResponse } from "@/types";
 
@@ -27,12 +27,12 @@ export async function GET(request: NextRequest) {
         );
     }
 
+    const client = await createModMedClient();
     const token = await getModMedToken();
 
-    const res = await modmedClient.get(`/ema/fhir/v2/Slot?${searchParams}`, {
+    const res = await client.get(`/ema/fhir/v2/Slot?${searchParams}`, {
       headers: {
         Authorization: `Bearer ${token}`,
-        "x-api-key": process.env.MODMED_API_KEY,
       },
     });
 
