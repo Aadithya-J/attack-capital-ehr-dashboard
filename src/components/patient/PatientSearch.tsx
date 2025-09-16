@@ -18,11 +18,10 @@ export default function PatientSearch({ onPatientSelect }: PatientSearchProps) {
   });
   const [searchType, setSearchType] = useState<'name' | 'id'>('name');
   const [hasSearched, setHasSearched] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
 
   // Build search query based on type and params
   const buildSearchQuery = () => {
-    if (!hasSearched) return null;
-    
     if (searchType === 'id' && searchParams.id.trim()) {
       return `/api/patients/${searchParams.id.trim()}`;
     }
@@ -40,11 +39,12 @@ export default function PatientSearch({ onPatientSelect }: PatientSearchProps) {
     return null;
   };
 
-  const searchQuery = buildSearchQuery();
-
-  const { data: searchResult, isLoading, error, refetch } = useQuery({
-    queryKey: ['patient-search', searchQuery],
+  const { data: searchResult, isLoading, error } = useQuery({
+    queryKey: ['patient-search', searchType, searchParams.family, searchParams.given, searchParams.id, hasSearched],
     queryFn: async () => {
+      if (!hasSearched) return null;
+      
+      const searchQuery = buildSearchQuery();
       if (!searchQuery) return null;
       
       const response = await fetch(searchQuery);
@@ -61,7 +61,7 @@ export default function PatientSearch({ onPatientSelect }: PatientSearchProps) {
       // Handle search results
       return data;
     },
-    enabled: false, // Disable automatic execution
+    enabled: hasSearched,
     staleTime: 30 * 1000, // 30 seconds
     retry: 1,
   });
@@ -71,12 +71,17 @@ export default function PatientSearch({ onPatientSelect }: PatientSearchProps) {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (searchType === 'id' && searchParams.id.trim()) {
+    // Prevent double-clicking by checking if already searching
+    if (isSearching) return;
+    
+    const canSearch = (searchType === 'id' && searchParams.id.trim()) || 
+                     (searchType === 'name' && (searchParams.family.trim() || searchParams.given.trim()));
+    
+    if (canSearch) {
+      setIsSearching(true);
       setHasSearched(true);
-      refetch();
-    } else if (searchType === 'name' && (searchParams.family.trim() || searchParams.given.trim())) {
-      setHasSearched(true);
-      refetch();
+      // Reset searching state after a short delay to prevent rapid clicks
+      setTimeout(() => setIsSearching(false), 1000);
     }
   };
 
@@ -175,10 +180,11 @@ export default function PatientSearch({ onPatientSelect }: PatientSearchProps) {
               disabled={
                 (searchType === 'id' && !searchParams.id.trim()) ||
                 (searchType === 'name' && !searchParams.family.trim() && !searchParams.given.trim()) ||
-                isLoading
+                isLoading ||
+                isSearching
               }
             >
-              {isLoading ? '🔄 Searching...' : '🔍 Search'}
+              {isLoading || isSearching ? '🔄 Searching...' : '🔍 Search'}
             </Button>
             {hasSearched && (
               <Button variant="secondary" onClick={clearSearch}>

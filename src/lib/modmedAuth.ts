@@ -12,7 +12,7 @@ export async function getModMedToken() {
     return cachedToken;
   }
 
-  const cfg = getModMedConfig();
+  const cfg = await getModMedConfig();
 
   const data = qs.stringify({
     grant_type: "password",
