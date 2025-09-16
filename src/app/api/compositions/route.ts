@@ -5,6 +5,37 @@ import { getModMedToken } from "@/lib/modmedAuth";
 import { CompositionCreateResponse, APIErrorResponse } from "@/types";
 
 
+export async function GET(request: NextRequest) {
+  try {
+    const patientId = request.nextUrl.searchParams.get("patient");
+
+    if (!patientId) {
+      const response = NextResponse.json(
+        { error: "Patient ID is required." } as APIErrorResponse,
+        { status: 400 }
+      );
+      return addSecurityHeaders(response);
+    }
+
+    const token = await getModMedToken();
+    const res = await modmedClient.get(`/ema/fhir/v2/Composition?subject=Patient/${patientId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "x-api-key": process.env.MODMED_API_KEY,
+      },
+    });
+
+    const response = NextResponse.json(res.data);
+    return addSecurityHeaders(response);
+  } catch (error: any) {
+    const response = NextResponse.json(
+      { error: error.response?.data || error.message } as APIErrorResponse,
+      { status: error.response?.status || 500 }
+    );
+    return addSecurityHeaders(response);
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -15,6 +46,7 @@ export async function POST(request: NextRequest) {
             { error: "Subject, author, and title are required fields for a Composition." } as APIErrorResponse,
             { status: 400 }
         );
+        return addSecurityHeaders(response);
     }
 
     const res = await modmedClient.post("/ema/fhir/v2/Composition", body, {
@@ -32,5 +64,6 @@ export async function POST(request: NextRequest) {
       { error: error.response?.data || error.message } as APIErrorResponse,
       { status: error.response?.status || 500 }
     );
+    return addSecurityHeaders(response);
   }
 }
