@@ -5,6 +5,7 @@ import Sidebar from '@/components/layout/Sidebar';
 import CredentialsSection from '@/components/sections/CredentialsSection';
 import PatientsSection from '@/components/sections/PatientsSection';
 import AppointmentsSection from '@/components/sections/AppointmentsSection';
+import ConditionsSection from '@/components/sections/ConditionsSection';
 
 interface Credentials {
   baseUrl: string;
@@ -32,6 +33,8 @@ export default function Home() {
         return <PatientsSection />;
       case 'appointments':
         return <AppointmentsSection />;
+      case 'conditions':
+        return <ConditionsSection />;
       default:
         return (
           <div className="p-6">
