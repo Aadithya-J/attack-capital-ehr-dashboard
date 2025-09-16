@@ -186,15 +186,15 @@ export default function AppointmentsSection() {
 
       <div className="grid grid-cols-3 gap-4">
         <Input
-          label="Search by Patient"
+          label="Search by Patient ID"
           value=""
-          placeholder="Enter patient name or ID"
+          placeholder="Enter patient ID"
           onChange={(value) => handleSearch('patient', value)}
         />
         <Input
-          label="Search by Practitioner"
+          label="Search by Practitioner ID"
           value=""
-          placeholder="Enter practitioner name or ID"
+          placeholder="Enter practitioner ID"
           onChange={(value) => handleSearch('practitioner', value)}
         />
         <Input

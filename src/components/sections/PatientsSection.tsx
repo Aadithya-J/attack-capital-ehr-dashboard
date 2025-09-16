@@ -27,10 +27,12 @@ interface Patient {
 }
 
 export default function PatientsSection() {
-  const [searchTerm, setSearchTerm] = useState('');
   const [searchParams, setSearchParams] = useState<Record<string, string> | undefined>();
   const [selectedPatientId, setSelectedPatientId] = useState<string>('');
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [familyName, setFamilyName] = useState('');
+  const [givenName, setGivenName] = useState('');
+  const [patientId, setPatientId] = useState('');
 
   const { data: patients = [], isLoading, error } = usePatients(searchParams);
   const { data: selectedPatient } = usePatient(selectedPatientId);
@@ -38,10 +40,15 @@ export default function PatientsSection() {
 
   const handleSearch = () => {
     const params: Record<string, string> = {};
-    if (searchTerm) {
-      params.name = searchTerm;
+    if (familyName.trim()) params.family = familyName.trim();
+    if (givenName.trim()) params.given = givenName.trim();
+    if (patientId.trim()) params._id = patientId.trim();
+    
+    if (Object.keys(params).length > 0) {
+      setSearchParams(params);
+    } else {
+      setSearchParams({});
     }
-    setSearchParams(params);
   };
 
   const getPatientName = (patient: Patient) => {
@@ -69,15 +76,29 @@ export default function PatientsSection() {
     <div className="space-y-6">
       <Card title="Patient Management">
         <div className="space-y-4">
-          <div className="flex space-x-4">
+          <div className="grid grid-cols-3 gap-4 mb-4">
             <Input
-              placeholder="Search by name..."
-              value={searchTerm}
-              onChange={setSearchTerm}
-              className="flex-1"
+              label="Search by Family Name"
+              placeholder="Enter family name"
+              value={familyName}
+              onChange={setFamilyName}
             />
+            <Input
+              label="Search by Given Name"
+              placeholder="Enter given name"
+              value={givenName}
+              onChange={setGivenName}
+            />
+            <Input
+              label="Search by ID"
+              placeholder="Enter patient ID"
+              value={patientId}
+              onChange={setPatientId}
+            />
+          </div>
+          <div className="flex justify-between items-center mb-6">
             <Button onClick={handleSearch} disabled={isLoading}>
-              {isLoading ? 'Searching...' : 'Search'}
+              {isLoading ? 'Searching...' : 'Search Patients'}
             </Button>
             <Button 
               variant="secondary" 
