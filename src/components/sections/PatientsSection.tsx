@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Card from '../ui/Card';
 import Input from '../ui/Input';
 import Button from '../ui/Button';
+import { usePatients, usePatient, useUpdatePatient } from '@/hooks/usePatients';
 
 interface Patient {
   id: string;
@@ -26,31 +27,21 @@ interface Patient {
 }
 
 export default function PatientsSection() {
-  const [patients, setPatients] = useState<Patient[]>([]);
-  const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
+  const [searchParams, setSearchParams] = useState<Record<string, string> | undefined>();
+  const [selectedPatientId, setSelectedPatientId] = useState<string>('');
   const [showCreateForm, setShowCreateForm] = useState(false);
 
-  const searchPatients = async () => {
-    setLoading(true);
-    try {
-      const params = new URLSearchParams();
-      if (searchTerm) {
-        params.append('name', searchTerm);
-      }
-      
-      const response = await fetch(`/api/patients?${params}`);
-      const data = await response.json();
-      
-      if (data.entry) {
-        setPatients(data.entry.map((entry: any) => entry.resource));
-      }
-    } catch (error) {
-      console.error('Error searching patients:', error);
-    } finally {
-      setLoading(false);
+  const { data: patients = [], isLoading, error } = usePatients(searchParams);
+  const { data: selectedPatient } = usePatient(selectedPatientId);
+  const updatePatientMutation = useUpdatePatient();
+
+  const handleSearch = () => {
+    const params: Record<string, string> = {};
+    if (searchTerm) {
+      params.name = searchTerm;
     }
+    setSearchParams(params);
   };
 
   const getPatientName = (patient: Patient) => {
@@ -74,10 +65,6 @@ export default function PatientsSection() {
     return 'N/A';
   };
 
-  useEffect(() => {
-    searchPatients();
-  }, []);
-
   return (
     <div className="space-y-6">
       <Card title="Patient Management">
@@ -89,8 +76,8 @@ export default function PatientsSection() {
               onChange={setSearchTerm}
               className="flex-1"
             />
-            <Button onClick={searchPatients} disabled={loading}>
-              {loading ? 'Searching...' : 'Search'}
+            <Button onClick={handleSearch} disabled={isLoading}>
+              {isLoading ? 'Searching...' : 'Search'}
             </Button>
             <Button 
               variant="secondary" 
@@ -99,6 +86,11 @@ export default function PatientsSection() {
               Add Patient
             </Button>
           </div>
+          {error && (
+            <div className="text-red-600 text-sm">
+              Error: {error.message}
+            </div>
+          )}
         </div>
       </Card>
 
@@ -109,7 +101,7 @@ export default function PatientsSection() {
               <div 
                 key={patient.id}
                 className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 cursor-pointer"
-                onClick={() => setSelectedPatient(patient)}
+                onClick={() => setSelectedPatientId(patient.id)}
               >
                 <div className="flex justify-between items-start">
                   <div>
@@ -155,7 +147,7 @@ export default function PatientsSection() {
               <p className="mt-1 text-sm text-gray-900">{getPatientAddress(selectedPatient)}</p>
             </div>
             <div className="flex space-x-4">
-              <Button variant="secondary" onClick={() => setSelectedPatient(null)}>
+              <Button variant="secondary" onClick={() => setSelectedPatientId('')}>
                 Close
               </Button>
               <Button>
