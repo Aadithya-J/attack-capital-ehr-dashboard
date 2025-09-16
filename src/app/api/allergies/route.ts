@@ -1,6 +1,6 @@
 import { addSecurityHeaders, logRequest, logResponse } from "@/lib/securityHeaders";
 import { NextRequest, NextResponse } from "next/server";
-import modmedClient from "@/lib/modmedClient";
+import { createModMedClient } from "@/lib/modmedClient";
 import { getModMedToken } from "@/lib/modmedAuth";
 
 // GET allergies by patient
@@ -15,13 +15,13 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    const client = await createModMedClient();
     const token = await getModMedToken();
-    const res = await modmedClient.get(
+    const res = await client.get(
       `/ema/fhir/v2/AllergyIntolerance?patient=${patientId}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
-          "x-api-key": process.env.MODMED_API_KEY,
         },
       }
     );
@@ -43,15 +43,15 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     console.log('Creating allergy with data:', JSON.stringify(body, null, 2));
+    const client = await createModMedClient();
     const token = await getModMedToken();
 
-    const res = await modmedClient.post(
+    const res = await client.post(
       "/ema/fhir/v2/AllergyIntolerance",
       body,
       {
         headers: {
           Authorization: `Bearer ${token}`,
-          "x-api-key": process.env.MODMED_API_KEY,
           "Content-Type": "application/json",
           // Add this header to get the created resource back in the response body
           "Prefer": "return=representation",
@@ -95,14 +95,14 @@ export async function PUT(request: NextRequest) {
       recordedDate: body.recordedDate,
     };
 
+    const client = await createModMedClient();
     const token = await getModMedToken();
-    const res = await modmedClient.put(
+    const res = await client.put(
       `/ema/fhir/v2/AllergyIntolerance/${allergyId}`,
       updatableBody,
       {
         headers: {
           Authorization: `Bearer ${token}`,
-          "x-api-key": process.env.MODMED_API_KEY,
           "Content-Type": "application/json",
         },
       }

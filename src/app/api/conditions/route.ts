@@ -1,6 +1,6 @@
 import { addSecurityHeaders, logRequest, logResponse } from "@/lib/securityHeaders";
 import { NextRequest, NextResponse } from "next/server";
-import modmedClient from "@/lib/modmedClient";
+import { createModMedClient } from "@/lib/modmedClient";
 import { getModMedToken } from "@/lib/modmedAuth";
 import { ConditionSearchResponse, SuccessResponse, APIErrorResponse } from "@/types";
 
@@ -16,11 +16,11 @@ export async function GET(request: NextRequest) {
       return addSecurityHeaders(response);
     }
 
+    const client = await createModMedClient();
     const token = await getModMedToken();
-    const res = await modmedClient.get(`/ema/fhir/v2/Condition?patient=${patientId}`, {
+    const res = await client.get(`/ema/fhir/v2/Condition?patient=${patientId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
-        "x-api-key": process.env.MODMED_API_KEY,
       },
     });
 
@@ -39,12 +39,12 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
+    const client = await createModMedClient();
     const token = await getModMedToken();
 
-    const res = await modmedClient.post("/ema/fhir/v2/Condition", body, {
+    const res = await client.post("/ema/fhir/v2/Condition", body, {
       headers: {
         Authorization: `Bearer ${token}`,
-        "x-api-key": process.env.MODMED_API_KEY,
         "Content-Type": "application/json",
       },
     });
@@ -82,11 +82,11 @@ export async function PUT(request: NextRequest) {
             return addSecurityHeaders(response);
         }
 
-        const token = await getModMedToken();
-        const res = await modmedClient.put(`/ema/fhir/v2/Condition/${conditionId}`, body, {
+        const client = await createModMedClient();
+    const token = await getModMedToken();
+        const res = await client.put(`/ema/fhir/v2/Condition/${conditionId}`, body, {
             headers: {
                 Authorization: `Bearer ${token}`,
-                "x-api-key": process.env.MODMED_API_KEY,
                 "Content-Type": "application/json",
             },
         });
