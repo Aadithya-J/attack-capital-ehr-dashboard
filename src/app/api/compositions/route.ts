@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import modmedClient from "@/lib/modmedClient";
 import { getModMedToken } from "@/lib/modmedAuth";
+import { CompositionCreateResponse, APIErrorResponse } from "@/types";
 
 
 export async function POST(request: NextRequest) {
@@ -10,7 +11,7 @@ export async function POST(request: NextRequest) {
 
     if (!body.subject || !body.author || !body.title) {
         return NextResponse.json(
-            { error: "Subject, author, and title are required fields for a Composition." },
+            { error: "Subject, author, and title are required fields for a Composition." } as APIErrorResponse,
             { status: 400 }
         );
     }
@@ -23,10 +24,10 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    return NextResponse.json(res.data, { status: 201 });
+    return NextResponse.json(res.data as CompositionCreateResponse, { status: 201 });
   } catch (error: any) {
     return NextResponse.json(
-      { error: error.response?.data || error.message },
+      { error: error.response?.data || error.message } as APIErrorResponse,
       { status: error.response?.status || 500 }
     );
   }
