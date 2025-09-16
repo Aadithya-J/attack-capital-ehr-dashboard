@@ -113,7 +113,7 @@ export default function AppointmentsSection() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl text-gray-900 font-bold">Appointments</h2>
+        <h2 className="text-2xl font-bold text-gray-900">Appointments</h2>
         <Button onClick={() => setIsCreating(true)}>
           Schedule Appointment
         </Button>
