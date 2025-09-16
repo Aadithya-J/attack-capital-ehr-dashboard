@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import modmedClient from "@/lib/modmedClient";
+import { createModMedClient } from "@/lib/modmedClient";
+import { getModMedConfig } from "@/lib/getModMedConfig";
 import { getModMedToken } from "@/lib/modmedAuth";
 import { PatientSearchResponse, PatientUpdateResponse, APIErrorResponse } from "@/types";
 import { addSecurityHeaders, logRequest, logResponse } from "@/lib/securityHeaders";
@@ -12,12 +13,12 @@ export async function GET(request: NextRequest) {
     const search = request.nextUrl.searchParams.toString();
     const query = search ? `?${search}` : "";
 
+    const client = await createModMedClient();
     const token = await getModMedToken();
 
-    const res = await modmedClient.get(`/ema/fhir/v2/Patient${query}`, {
+    const res = await client.get(`/ema/fhir/v2/Patient${query}`, {
       headers: {
         Authorization: `Bearer ${token}`,
-        "x-api-key": process.env.MODMED_API_KEY,
       },
     });
 

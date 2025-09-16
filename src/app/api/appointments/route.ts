@@ -1,6 +1,6 @@
 import { addSecurityHeaders, logRequest, logResponse } from "@/lib/securityHeaders";
 import { NextRequest, NextResponse } from "next/server";
-import modmedClient from "@/lib/modmedClient";
+import { createModMedClient } from "@/lib/modmedClient";
 import { getModMedToken } from "@/lib/modmedAuth";
 import { AppointmentSearchResponse, AppointmentCreateRequest, SuccessResponse, APIErrorResponse } from "@/types";
 
@@ -16,12 +16,12 @@ import { AppointmentSearchResponse, AppointmentCreateRequest, SuccessResponse, A
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams.toString();
+    const client = await createModMedClient();
     const token = await getModMedToken();
 
-    const res = await modmedClient.get(`/ema/fhir/v2/Appointment?${searchParams}`, {
+    const res = await client.get(`/ema/fhir/v2/Appointment?${searchParams}`, {
       headers: {
         Authorization: `Bearer ${token}`,
-        "x-api-key": process.env.MODMED_API_KEY,
       },
     });
 
@@ -39,6 +39,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body: AppointmentCreateRequest = await request.json();
+    const client = await createModMedClient();
     const token = await getModMedToken();
 
     if (!body.status || !body.appointmentType || !body.participant || !body.start || !body.end) {
@@ -46,12 +47,12 @@ export async function POST(request: NextRequest) {
             { error: "Missing required fields for creating an appointment." } as APIErrorResponse,
             { status: 400 }
         );
+        return addSecurityHeaders(response);
     }
 
-    const res = await modmedClient.post("/ema/fhir/v2/Appointment", body, {
+    const res = await client.post("/ema/fhir/v2/Appointment", body, {
       headers: {
         Authorization: `Bearer ${token}`,
-        "x-api-key": process.env.MODMED_API_KEY,
         "Content-Type": "application/json",
       },
     });
