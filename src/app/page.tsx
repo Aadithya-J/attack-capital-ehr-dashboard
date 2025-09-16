@@ -6,6 +6,12 @@ import CredentialsSection from '@/components/sections/CredentialsSection';
 import PatientsSection from '@/components/sections/PatientsSection';
 import AppointmentsSection from '@/components/sections/AppointmentsSection';
 import ConditionsSection from '@/components/sections/ConditionsSection';
+import MedicationsSection from '@/components/sections/MedicationsSection';
+import AllergiesSection from '@/components/sections/AllergiesSection';
+import EncountersSection from '@/components/sections/EncountersSection';
+import AccountsSection from '@/components/sections/AccountsSection';
+import CoverageSection from '@/components/sections/CoverageSection';
+import ClinicalNotesSection from '@/components/sections/ClinicalNotesSection';
 
 interface Credentials {
   baseUrl: string;
@@ -35,6 +41,18 @@ export default function Home() {
         return <AppointmentsSection />;
       case 'conditions':
         return <ConditionsSection />;
+      case 'medications':
+        return <MedicationsSection />;
+      case 'allergies':
+        return <AllergiesSection />;
+      case 'encounters':
+        return <EncountersSection />;
+      case 'accounts':
+        return <AccountsSection />;
+      case 'coverage':
+        return <CoverageSection />;
+      case 'clinical-notes':
+        return <ClinicalNotesSection />;
       default:
         return (
           <div className="p-6">
