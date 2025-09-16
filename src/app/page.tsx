@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Sidebar from '@/components/layout/Sidebar';
 import CredentialsSection from '@/components/sections/CredentialsSection';
 import PatientsSection from '@/components/sections/PatientsSection';
+import AppointmentsSection from '@/components/sections/AppointmentsSection';
 
 interface Credentials {
   baseUrl: string;
@@ -29,6 +30,8 @@ export default function Home() {
         return <CredentialsSection onCredentialsChange={setCredentials} />;
       case 'patients':
         return <PatientsSection />;
+      case 'appointments':
+        return <AppointmentsSection />;
       default:
         return (
           <div className="p-6">
