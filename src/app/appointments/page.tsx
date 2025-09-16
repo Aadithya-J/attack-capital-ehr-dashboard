@@ -1,15 +1,15 @@
 'use client';
 
 import Sidebar from '@/components/layout/Sidebar';
-import DashboardOverview from '@/components/dashboard/DashboardOverview';
+import AppointmentsSection from '@/components/sections/AppointmentsSection';
 
-export default function Home() {
+export default function AppointmentsPage() {
   return (
     <div className="flex h-screen bg-gray-100">
       <Sidebar />
       <main className="flex-1 overflow-y-auto">
         <div className="p-6">
-          <DashboardOverview />
+          <AppointmentsSection />
         </div>
       </main>
     </div>
