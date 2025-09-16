@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Sidebar from '@/components/layout/Sidebar';
 import CredentialsSection from '@/components/sections/CredentialsSection';
+import PatientsSection from '@/components/sections/PatientsSection';
 
 interface Credentials {
   baseUrl: string;
@@ -26,6 +27,8 @@ export default function Home() {
     switch (activeSection) {
       case 'credentials':
         return <CredentialsSection onCredentialsChange={setCredentials} />;
+      case 'patients':
+        return <PatientsSection />;
       default:
         return (
           <div className="p-6">
