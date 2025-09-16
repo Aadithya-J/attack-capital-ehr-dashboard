@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import modmedClient from "@/lib/modmedClient";
 import { getModMedToken } from "@/lib/modmedAuth";
+import { Appointment, AppointmentUpdateRequest, SuccessResponse, APIErrorResponse } from "@/types";
 
 export async function GET(
   request: NextRequest,
@@ -17,10 +18,10 @@ export async function GET(
       },
     });
 
-    return NextResponse.json(res.data);
+    return NextResponse.json(res.data as Appointment);
   } catch (error: any) {
     return NextResponse.json(
-      { error: error.response?.data || error.message },
+      { error: error.response?.data || error.message } as APIErrorResponse,
       { status: error.response?.status || 500 }
     );
   }
@@ -38,12 +39,12 @@ export async function PUT(
 ) {
   try {
     const { id } = await params;
-    const body = await request.json();
+    const body: AppointmentUpdateRequest = await request.json();
     const token = await getModMedToken();
 
     if (body.id !== id) {
       return NextResponse.json(
-        { error: "Appointment ID in the request body must match the URL." },
+        { error: "Appointment ID in the request body must match the URL." } as APIErrorResponse,
         { status: 400 }
       );
     }
@@ -55,10 +56,18 @@ export async function PUT(
         "Content-Type": "application/json",
       },
     });
+    
+    // Handle empty response from ModMed API
+    if (res.status >= 200 && res.status < 300) {
+      return NextResponse.json(
+        { success: true, message: `Appointment ${id} updated successfully.` } as SuccessResponse
+      );
+    }
+    
     return NextResponse.json(res.data);
   } catch (error: any) {
     return NextResponse.json(
-      { error: error.response?.data || error.message },
+      { error: error.response?.data || error.message } as APIErrorResponse,
       { status: error.response?.status || 500 }
     );
   }
