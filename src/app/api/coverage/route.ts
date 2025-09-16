@@ -13,6 +13,7 @@ export async function GET(request: NextRequest) {
         { error: "A 'patient' ID is required to search for coverage." } as APIErrorResponse,
         { status: 400 }
       );
+      return addSecurityHeaders(response);
     }
 
     const token = await getModMedToken();
@@ -30,5 +31,6 @@ export async function GET(request: NextRequest) {
       { error: error.response?.data || error.message } as APIErrorResponse,
       { status: error.response?.status || 500 }
     );
+    return addSecurityHeaders(response);
   }
 }

@@ -29,6 +29,7 @@ export async function GET(request: NextRequest) {
             { error: error.response?.data || error.message },
             { status: error.response?.status || 500 }
         );
+        return addSecurityHeaders(response);
     }
 }
 
@@ -59,5 +60,6 @@ export async function POST(request: NextRequest) {
       { error: error.response?.data || error.message },
       { status: error.response?.status || 500 }
     );
+    return addSecurityHeaders(response);
   }
 }
