@@ -1,3 +1,4 @@
+import { addSecurityHeaders, logRequest, logResponse } from "@/lib/securityHeaders";
 import { NextRequest, NextResponse } from "next/server";
 import modmedClient from "@/lib/modmedClient";
 import { getModMedToken } from "@/lib/modmedAuth";
@@ -20,7 +21,7 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams.toString();
 
     if (!request.nextUrl.searchParams.has("appointment-type")) {
-        return NextResponse.json(
+        const response = NextResponse.json(
             { error: "An 'appointment-type' query parameter is required." } as APIErrorResponse,
             { status: 400 }
         );
@@ -35,9 +36,10 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    return NextResponse.json(res.data as SlotSearchResponse);
+    const response = NextResponse.json(res.data as SlotSearchResponse);
+    return addSecurityHeaders(response);
   } catch (error: any) {
-    return NextResponse.json(
+    const response = NextResponse.json(
       { error: error.response?.data || error.message } as APIErrorResponse,
       { status: error.response?.status || 500 }
     );

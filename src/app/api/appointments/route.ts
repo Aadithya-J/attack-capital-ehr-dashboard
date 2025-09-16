@@ -1,3 +1,4 @@
+import { addSecurityHeaders, logRequest, logResponse } from "@/lib/securityHeaders";
 import { NextRequest, NextResponse } from "next/server";
 import modmedClient from "@/lib/modmedClient";
 import { getModMedToken } from "@/lib/modmedAuth";
@@ -24,9 +25,10 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    return NextResponse.json(res.data as AppointmentSearchResponse);
+    const response = NextResponse.json(res.data as AppointmentSearchResponse);
+    return addSecurityHeaders(response);
   } catch (error: any)    {
-    return NextResponse.json(
+    const response = NextResponse.json(
       { error: error.response?.data || error.message } as APIErrorResponse,
       { status: error.response?.status || 500 }
     );
@@ -39,7 +41,7 @@ export async function POST(request: NextRequest) {
     const token = await getModMedToken();
 
     if (!body.status || !body.appointmentType || !body.participant || !body.start || !body.end) {
-        return NextResponse.json(
+        const response = NextResponse.json(
             { error: "Missing required fields for creating an appointment." } as APIErrorResponse,
             { status: 400 }
         );
@@ -55,15 +57,16 @@ export async function POST(request: NextRequest) {
 
     // Handle empty response from ModMed API
     if (res.status >= 200 && res.status < 300) {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { success: true, message: "Appointment created successfully." } as SuccessResponse,
         { status: 201 }
       );
     }
     
-    return NextResponse.json(res.data, { status: 201 });
+    const response = NextResponse.json(res.data, { status: 201 });
+    return addSecurityHeaders(response);
   } catch (error: any) {
-    return NextResponse.json(
+    const response = NextResponse.json(
       { error: error.response?.data || error.message } as APIErrorResponse,
       { status: error.response?.status || 500 }
     );

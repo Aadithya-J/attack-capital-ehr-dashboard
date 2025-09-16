@@ -1,3 +1,4 @@
+import { addSecurityHeaders, logRequest, logResponse } from "@/lib/securityHeaders";
 import { NextRequest, NextResponse } from "next/server";
 import modmedClient from "@/lib/modmedClient";
 import { getModMedToken } from "@/lib/modmedAuth";
@@ -8,7 +9,7 @@ export async function GET(request: NextRequest) {
     const patientId = request.nextUrl.searchParams.get("patient");
 
     if (!patientId) {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { error: "Patient ID is required." } as APIErrorResponse,
         { status: 400 }
       );
@@ -22,9 +23,10 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    return NextResponse.json(res.data as ConditionSearchResponse);
+    const response = NextResponse.json(res.data as ConditionSearchResponse);
+    return addSecurityHeaders(response);
   } catch (error: any) {
-    return NextResponse.json(
+    const response = NextResponse.json(
       { error: error.response?.data || error.message } as APIErrorResponse,
       { status: error.response?.status || 500 }
     );
@@ -47,15 +49,16 @@ export async function POST(request: NextRequest) {
 
     // Handle empty response from ModMed API
     if (res.status >= 200 && res.status < 300) {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { success: true, message: "Condition created successfully." } as SuccessResponse,
         { status: 201 }
       );
     }
     
-    return NextResponse.json(res.data, { status: 201 });
+    const response = NextResponse.json(res.data, { status: 201 });
+    return addSecurityHeaders(response);
   } catch (error: any) {
-    return NextResponse.json(
+    const response = NextResponse.json(
       { error: error.response?.data || error.message } as APIErrorResponse,
       { status: error.response?.status || 500 }
     );
@@ -68,7 +71,7 @@ export async function PUT(request: NextRequest) {
         const conditionId = body.id;
 
         if (!conditionId) {
-            return NextResponse.json(
+            const response = NextResponse.json(
                 { error: "Condition ID is required in the request body for updates." } as APIErrorResponse,
                 { status: 400 }
             );
@@ -85,14 +88,15 @@ export async function PUT(request: NextRequest) {
 
         // Handle empty response from ModMed API
         if (res.status >= 200 && res.status < 300) {
-            return NextResponse.json(
+            const response = NextResponse.json(
                 { success: true, message: `Condition ${conditionId} updated successfully.` } as SuccessResponse
             );
         }
         
-        return NextResponse.json(res.data);
+        const response = NextResponse.json(res.data);
+    return addSecurityHeaders(response);
     } catch (error: any) {
-        return NextResponse.json(
+        const response = NextResponse.json(
             { error: error.response?.data || error.message } as APIErrorResponse,
             { status: error.response?.status || 500 }
         );

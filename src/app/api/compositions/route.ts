@@ -1,3 +1,4 @@
+import { addSecurityHeaders, logRequest, logResponse } from "@/lib/securityHeaders";
 import { NextRequest, NextResponse } from "next/server";
 import modmedClient from "@/lib/modmedClient";
 import { getModMedToken } from "@/lib/modmedAuth";
@@ -10,7 +11,7 @@ export async function POST(request: NextRequest) {
     const token = await getModMedToken();
 
     if (!body.subject || !body.author || !body.title) {
-        return NextResponse.json(
+        const response = NextResponse.json(
             { error: "Subject, author, and title are required fields for a Composition." } as APIErrorResponse,
             { status: 400 }
         );
@@ -24,9 +25,10 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    return NextResponse.json(res.data as CompositionCreateResponse, { status: 201 });
+    const response = NextResponse.json(res.data as CompositionCreateResponse, { status: 201 });
+    return addSecurityHeaders(response);
   } catch (error: any) {
-    return NextResponse.json(
+    const response = NextResponse.json(
       { error: error.response?.data || error.message } as APIErrorResponse,
       { status: error.response?.status || 500 }
     );

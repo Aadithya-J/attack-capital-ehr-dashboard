@@ -1,3 +1,4 @@
+import { addSecurityHeaders, logRequest, logResponse } from "@/lib/securityHeaders";
 import { NextRequest, NextResponse } from "next/server";
 import modmedClient from "@/lib/modmedClient";
 import { getModMedToken } from "@/lib/modmedAuth";
@@ -7,7 +8,7 @@ export async function GET(request: NextRequest) {
     const patientId = request.nextUrl.searchParams.get("patient");
 
     if (!patientId) {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { error: "Patient ID is required." },
         { status: 400 }
       );
@@ -21,9 +22,10 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    return NextResponse.json(res.data);
+    const response = NextResponse.json(res.data);
+    return addSecurityHeaders(response);
   } catch (error: any) {
-    return NextResponse.json(
+    const response = NextResponse.json(
       { error: error.response?.data || error.message },
       { status: error.response?.status || 500 }
     );
@@ -43,9 +45,10 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    return NextResponse.json(res.data, { status: 201 });
+    const response = NextResponse.json(res.data, { status: 201 });
+    return addSecurityHeaders(response);
   } catch (error: any) {
-    return NextResponse.json(
+    const response = NextResponse.json(
       { error: error.response?.data || error.message },
       { status: error.response?.status || 500 }
     );
@@ -58,7 +61,7 @@ export async function PUT(request: NextRequest) {
         const allergyId = body.id;
 
         if (!allergyId) {
-            return NextResponse.json(
+            const response = NextResponse.json(
                 { error: "AllergyIntolerance ID is required in the request body for updates." },
                 { status: 400 }
             );
@@ -73,9 +76,10 @@ export async function PUT(request: NextRequest) {
             },
         });
 
-        return NextResponse.json(res.data);
+        const response = NextResponse.json(res.data);
+    return addSecurityHeaders(response);
     } catch (error: any) {
-        return NextResponse.json(
+        const response = NextResponse.json(
             { error: error.response?.data || error.message },
             { status: error.response?.status || 500 }
         );

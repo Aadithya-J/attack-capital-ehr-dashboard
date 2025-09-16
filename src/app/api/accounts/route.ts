@@ -1,3 +1,4 @@
+import { addSecurityHeaders, logRequest, logResponse } from "@/lib/securityHeaders";
 import { NextRequest, NextResponse } from "next/server";
 import modmedClient from "@/lib/modmedClient";
 import { getModMedToken } from "@/lib/modmedAuth";
@@ -8,7 +9,8 @@ export async function GET(request: NextRequest) {
     const patientId = request.nextUrl.searchParams.get("patient");
 
     if (!patientId) {
-      return NextResponse.json({ error: "Patient ID is required." } as APIErrorResponse, { status: 400 });
+      const response = NextResponse.json({ error: "Patient ID is required." } as APIErrorResponse, { status: 400 });
+    return addSecurityHeaders(response);
     }
 
     const token = await getModMedToken();
@@ -19,8 +21,10 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    return NextResponse.json(res.data as AccountSearchResponse);
+    const response = NextResponse.json(res.data as AccountSearchResponse);
+    return addSecurityHeaders(response);
   } catch (error: any) {
-    return NextResponse.json({ error: error.response?.data || error.message } as APIErrorResponse, { status: error.response?.status || 500 });
+    const response = NextResponse.json({ error: error.response?.data || error.message } as APIErrorResponse, { status: error.response?.status || 500 });
+    return addSecurityHeaders(response);
   }
 }

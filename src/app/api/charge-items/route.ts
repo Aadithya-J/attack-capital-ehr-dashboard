@@ -1,3 +1,4 @@
+import { addSecurityHeaders, logRequest, logResponse } from "@/lib/securityHeaders";
 import { NextRequest, NextResponse } from "next/server";
 import modmedClient from "@/lib/modmedClient";
 import { getModMedToken } from "@/lib/modmedAuth";
@@ -7,7 +8,7 @@ export async function GET(request: NextRequest) {
     try {
         const searchParams = request.nextUrl.searchParams;
         if (!searchParams.has("patient") && !searchParams.has("context")) {
-            return NextResponse.json(
+            const response = NextResponse.json(
                 { error: "A 'patient' or 'context' (encounter) ID is required to search for charges." },
                 { status: 400 }
             );
@@ -21,9 +22,10 @@ export async function GET(request: NextRequest) {
             },
         });
 
-        return NextResponse.json(res.data);
+        const response = NextResponse.json(res.data);
+    return addSecurityHeaders(response);
     } catch (error: any) {
-        return NextResponse.json(
+        const response = NextResponse.json(
             { error: error.response?.data || error.message },
             { status: error.response?.status || 500 }
         );
@@ -36,7 +38,7 @@ export async function POST(request: NextRequest) {
     const token = await getModMedToken();
 
     if (!body.subject || !body.status) {
-        return NextResponse.json(
+        const response = NextResponse.json(
             { error: "Subject (patient) and status are required for a ChargeItem." },
             { status: 400 }
         );
@@ -50,9 +52,10 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    return NextResponse.json(res.data, { status: 201 });
+    const response = NextResponse.json(res.data, { status: 201 });
+    return addSecurityHeaders(response);
   } catch (error: any) {
-    return NextResponse.json(
+    const response = NextResponse.json(
       { error: error.response?.data || error.message },
       { status: error.response?.status || 500 }
     );

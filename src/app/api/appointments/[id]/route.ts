@@ -1,3 +1,4 @@
+import { addSecurityHeaders, logRequest, logResponse } from "@/lib/securityHeaders";
 import { NextRequest, NextResponse } from "next/server";
 import modmedClient from "@/lib/modmedClient";
 import { getModMedToken } from "@/lib/modmedAuth";
@@ -18,9 +19,10 @@ export async function GET(
       },
     });
 
-    return NextResponse.json(res.data as Appointment);
+    const response = NextResponse.json(res.data as Appointment);
+    return addSecurityHeaders(response);
   } catch (error: any) {
-    return NextResponse.json(
+    const response = NextResponse.json(
       { error: error.response?.data || error.message } as APIErrorResponse,
       { status: error.response?.status || 500 }
     );
@@ -43,7 +45,7 @@ export async function PUT(
     const token = await getModMedToken();
 
     if (body.id !== id) {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { error: "Appointment ID in the request body must match the URL." } as APIErrorResponse,
         { status: 400 }
       );
@@ -59,14 +61,15 @@ export async function PUT(
     
     // Handle empty response from ModMed API
     if (res.status >= 200 && res.status < 300) {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { success: true, message: `Appointment ${id} updated successfully.` } as SuccessResponse
       );
     }
     
-    return NextResponse.json(res.data);
+    const response = NextResponse.json(res.data);
+    return addSecurityHeaders(response);
   } catch (error: any) {
-    return NextResponse.json(
+    const response = NextResponse.json(
       { error: error.response?.data || error.message } as APIErrorResponse,
       { status: error.response?.status || 500 }
     );
