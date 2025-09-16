@@ -15,10 +15,9 @@ const sections = [
   { id: 'medications', name: 'Medications', icon: '•' },
   { id: 'allergies', name: 'Allergies', icon: '•' },
   { id: 'encounters', name: 'Encounters', icon: '•' },
-  { id: 'coverage', name: 'Coverage', icon: '•' },
   { id: 'accounts', name: 'Accounts', icon: '•' },
-  { id: 'practitioners', name: 'Practitioners', icon: '•' },
-  { id: 'locations', name: 'Locations', icon: '•' },
+  { id: 'coverage', name: 'Coverage', icon: '•' },
+  { id: 'clinical-notes', name: 'Clinical Notes', icon: '•' },
 ];
 
 export default function Sidebar({ activeSection, onSectionChange }: SidebarProps) {
