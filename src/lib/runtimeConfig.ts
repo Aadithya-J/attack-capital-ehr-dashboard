@@ -14,11 +14,13 @@ const MAX_AGE = 60 * 60 * 24 * 30; // 30 days
 // ------ Browser helpers (client-side) ------
 export function saveCredsBrowser(creds: ModMedCreds) {
   const encoded = encrypt(JSON.stringify(creds), getSecret());
-  document.cookie = `${COOKIE_NAME}=${encoded}; Path=/; Max-Age=${MAX_AGE}; SameSite=Strict; Secure`;
+  const secureFlag = location.protocol === 'https:' ? ' Secure' : '';
+  document.cookie = `${COOKIE_NAME}=${encoded}; Path=/; Max-Age=${MAX_AGE}; SameSite=Lax;${secureFlag}`;
 }
 
 export function clearCredsBrowser() {
-  document.cookie = `${COOKIE_NAME}=; Path=/; Max-Age=0; SameSite=Strict; Secure`;
+  const secureFlag = location.protocol === 'https:' ? ' Secure' : '';
+  document.cookie = `${COOKIE_NAME}=; Path=/; Max-Age=0; SameSite=Lax;${secureFlag}`;
 }
 
 export function loadCredsBrowser(): ModMedCreds | null {
