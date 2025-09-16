@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
         );
         return addSecurityHeaders(response);
     }
-
+    console.log("Creating composition with data:", JSON.stringify(body, null, 2));
     const res = await modmedClient.post("/ema/fhir/v2/Composition", body, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -64,6 +64,7 @@ export async function POST(request: NextRequest) {
       { error: error.response?.data || error.message } as APIErrorResponse,
       { status: error.response?.status || 500 }
     );
+    console.log(error)
     return addSecurityHeaders(response);
   }
 }

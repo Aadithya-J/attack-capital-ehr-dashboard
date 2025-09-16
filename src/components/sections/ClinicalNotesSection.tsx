@@ -106,9 +106,10 @@ export default function ClinicalNotesSection() {
         note: '',
         date: ''
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to create clinical note:', error);
-      alert('Failed to create clinical note');
+      const message = error?.response?.data?.error || error?.message || 'Failed to create clinical note';
+      alert(message);
     }
   };
 
